@@ -121,7 +121,16 @@
       return;
     }
 
-    const finalUrl = decodedFull.slice(index + 2);
+    const extracted = decodedFull.slice(index + 2);
+
+    let finalUrl;
+
+    try {
+      finalUrl = encodeURI(extracted);
+    } catch {
+      showError("Ошибка кодирования URL");
+      return;
+    }
 
     showSuccess(finalUrl);
   });
@@ -138,6 +147,7 @@
     output.className = "result success";
   }
 </script>
+
 
 
 </body>
