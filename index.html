@@ -105,34 +105,48 @@
       return;
     }
 
-    let decodedFull;
+    let url;
 
     try {
-      decodedFull = decodeURIComponent(raw);
+      url = new URL(raw);
     } catch {
-      showError("Ошибка декодирования URL");
+      showError("Некорректный URL");
       return;
     }
 
-    const index = decodedFull.indexOf("u=");
+    const encodedU = url.searchParams.get("u");
 
-    if (index === -1) {
+    if (!encodedU) {
       showError("Параметр 'u' не найден");
       return;
     }
 
-    const extracted = decodedFull.slice(index + 2);
-
-    let finalUrl;
+    let decodedU;
 
     try {
-      finalUrl = encodeURI(extracted);
+      decodedU = decodeURIComponent(encodedU);
     } catch {
-      showError("Ошибка кодирования URL");
+      showError("Ошибка декодирования параметра u");
       return;
     }
 
-    showSuccess(finalUrl);
+    let targetUrl;
+
+    try {
+      targetUrl = new URL(decodedU);
+    } catch {
+      showError("Декодированная ссылка некорректна");
+      return;
+    }
+
+    // Добавляем остальные параметры
+    url.searchParams.forEach((value, key) => {
+      if (key !== "u") {
+        targetUrl.searchParams.append(key, value);
+      }
+    });
+
+    showSuccess(targetUrl.toString());
   });
 
   function showError(text) {
@@ -147,6 +161,7 @@
     output.className = "result success";
   }
 </script>
+
 
 
 
