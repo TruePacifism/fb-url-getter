@@ -93,58 +93,52 @@
   </div>
 
   <script>
-    const input = document.getElementById("input");
-    const output = document.getElementById("output");
-    const button = document.getElementById("decodeBtn");
+  const input = document.getElementById("input");
+  const output = document.getElementById("output");
+  const button = document.getElementById("decodeBtn");
 
-    button.addEventListener("click", () => {
-      const raw = input.value.trim();
+  button.addEventListener("click", () => {
+    const raw = input.value.trim();
 
-      if (!raw) {
-        showError("Введите URL");
-        return;
-      }
-
-      let url;
-
-      try {
-        url = new URL(raw);
-      } catch {
-        showError("Некорректный URL");
-        return;
-      }
-
-      const encodedU = url.searchParams.get("u");
-
-      if (!encodedU) {
-        showError("Параметр 'u' не найден");
-        return;
-      }
-
-      let decoded;
-
-      try {
-        decoded = decodeURIComponent(encodedU);
-      } catch {
-        showError("Ошибка декодирования параметра 'u'");
-        return;
-      }
-
-      showSuccess(decoded);
-    });
-
-    function showError(text) {
-      output.hidden = false;
-      output.textContent = "Ошибка: " + text;
-      output.className = "result error";
+    if (!raw) {
+      showError("Введите URL");
+      return;
     }
 
-    function showSuccess(text) {
-      output.hidden = false;
-      output.textContent = text;
-      output.className = "result success";
+    let decodedFull;
+
+    try {
+      decodedFull = decodeURIComponent(raw);
+    } catch {
+      showError("Ошибка декодирования URL");
+      return;
     }
-  </script>
+
+    const index = decodedFull.indexOf("u=");
+
+    if (index === -1) {
+      showError("Параметр 'u' не найден");
+      return;
+    }
+
+    const finalUrl = decodedFull.slice(index + 2);
+
+    showSuccess(finalUrl);
+  });
+
+  function showError(text) {
+    output.hidden = false;
+    output.textContent = "Ошибка: " + text;
+    output.className = "result error";
+  }
+
+  function showSuccess(text) {
+    output.hidden = false;
+    output.textContent = text;
+    output.className = "result success";
+  }
+</script>
+
 
 </body>
 </html>
